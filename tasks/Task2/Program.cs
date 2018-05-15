@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Task2
 {
-
+    
     class Server
     {
         private string _cpuType;
@@ -81,6 +81,7 @@ namespace Task2
             Console.WriteLine("-----------\n");
         }
     }
+    
     class Program
     {
         static void Main(string[] args)

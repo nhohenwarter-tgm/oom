@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Task6
 {
@@ -97,6 +98,41 @@ namespace Task6
             this.Price = price;
             this.Hostname = hostname;
             this.HE = he;
+        }
+
+        public Task Update()
+        {
+            return Task.Run(() =>
+            {
+                Random rnd = new Random();
+
+                Console.WriteLine("["+this.Hostname+"] Starting system update...");
+                for(int i = 0; i <= 10; i++)
+                {
+                    Console.WriteLine("[" + this.Hostname + "] Update is " + (i * 10) + "% completed...");
+                    Task.Delay(TimeSpan.FromSeconds(0.5 + rnd.NextDouble())).Wait();
+                }
+                
+                Console.WriteLine("[" + this.Hostname + "] System Update completed!");
+            });
+        }
+
+        public Task Reboot()
+        {
+            return Task.Run(() =>
+            {
+                Random rnd = new Random();
+
+                Console.WriteLine("[" + this.Hostname + "] Rebooting System...");
+                Task.Delay(TimeSpan.FromSeconds(5 + rnd.Next(1,5))).Wait();
+                Console.WriteLine("[" + this.Hostname + "] System Reboot completed!");
+            });
+        }
+
+        public async Task Maintenance()
+        {
+            await Update();
+            await Reboot();
         }
 
         public void Print()

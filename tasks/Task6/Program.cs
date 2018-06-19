@@ -23,7 +23,7 @@ namespace Task6
             h1[4] = new Server("Intel Xeon E7-8855 v4", 40000, 128, 6959.90m, "serv03", 2);
 
             Console.WriteLine("\nPrinting Objects...\n");
-            for(int i = 0; i < h1.Length; i++)
+            for (int i = 0; i < h1.Length; i++)
             {
                 h1[i].Print();
             }
@@ -53,20 +53,43 @@ namespace Task6
             }
 
             var source = new Subject<Server>();
-            source.Timestamp().Where(x => x.Value.DiskSpace >= 4242).Subscribe(x => Console.WriteLine($"Server {x.Value.Hostname} started to boot at {x.Timestamp}"));
+            source.Timestamp().Where(x => x.Value.DiskSpace >= 4242).Subscribe(x => Console.WriteLine($"Storage Server {x.Value.Hostname} started to boot at {x.Timestamp}"));
+            Random rnd = new Random();
 
             var t = new Thread(() =>
             {
-                Random rnd = new Random();
-                for (int i = 1; i <= 100; i++)
+                for (int i = 1; i <= 30; i++)
                 {
-                    Server s = new Server("Intel Xeon E7-8855 v4", rnd.Next(1000,10000), rnd.Next(128,512), rnd.Next(1000,100000), "serv" + i, 2);
+                    Server s = new Server("Intel Xeon E7-8855 v4", rnd.Next(1000, 10000), rnd.Next(128, 512), rnd.Next(1000, 100000), "serv" + i, 2);
                     Thread.Sleep(400);
                     source.OnNext(s);
                     Console.WriteLine($"Powered Up Server {s.Hostname}");
                 }
             });
             t.Start();
-        }   
+            t.Join();
+
+            Server[] server = new Server[10];
+            for (int i = 0; i < 10; i++)
+            {
+                server[i] = new Server("Intel Xeon E7-8855 v4", rnd.Next(1000, 10000), rnd.Next(128, 512), rnd.Next(1000, 100000), "serv" + (i + 1), 2);
+            }
+            var stask = new List<Task>();
+
+            foreach (Server s in server)
+            {
+                stask.Add(s.Maintenance());
+            }
+
+            foreach (Task st in stask)
+            {
+                st.ContinueWith(a => { Console.WriteLine("Completed!"); });
+            }
+
+            foreach (Task st in stask)
+            {
+                st.Wait();
+            }
+        }
     }
 }
